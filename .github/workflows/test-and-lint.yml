@@ -1,0 +1,32 @@
+name: hexlet-test-and-lint
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Install dependencies
+        run: |
+          pip install poetry
+          make install
+          
+#      - name: Run linter
+#        run: |
+#          make check
+#
+#      - name: Test & publish code coverage
+#        uses: paambaati/codeclimate-action@v2.7.4
+#        env:
+#            CC_TEST_REPORTER_ID: 8f05708989fa79234704fc04f57e05e637470ded05045f45623fcd7820358113
+#        with:
+#            coverageCommand: make test-coverage
+#            debug: true
