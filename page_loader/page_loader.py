@@ -1,17 +1,24 @@
 import os
-from page_loader.file_handler import save_html_to_file
-from page_loader.url_handler import get_html_file_name, get_data_from_url
-from urllib.parse import urlparse
+from bs4 import BeautifulSoup
+from page_loader.data_handler import save_data_to_file, get_data_from_url
+from page_loader.url_handler import get_html_file_name, get_url_string_name, \
+    get_directory_name
+from page_loader.resources_handler import handling_resources
 
 
 DEFAULT_DIR = os.getcwd()
 
 
-def download(url, file_path=DEFAULT_DIR):
-    parsed_url = urlparse(url)
-    parsed_path = f'{parsed_url.netloc}{parsed_url.path}'
-    result_string = get_html_file_name(parsed_path)
-    result_file_path = os.path.join(file_path, result_string)
+def download(url, directory_path=DEFAULT_DIR):
+    url_string_name = get_url_string_name(url)
+    result_file_name = get_html_file_name(url_string_name)
+    result_file_path = os.path.join(directory_path, result_file_name)
     data_from_url = get_data_from_url(url)
-    save_html_to_file(result_file_path, data_from_url)
+    directory_with_resources = get_directory_name(url)
+    resources_path = os.path.join(directory_path, directory_with_resources)
+    os.mkdir(resources_path)
+    soup = BeautifulSoup(data_from_url, 'html.parser')
+    resource_tag = soup.find_all('img')
+    handling_resources(url, resources_path, resource_tag)
+    save_data_to_file(result_file_path, soup.prettify())
     return result_file_path
