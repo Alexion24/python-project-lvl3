@@ -1,24 +1,35 @@
 import os
-import requests
 import tempfile
 from page_loader.page_loader import download
 
 
-HEXLET_URL = 'https://page-loader.hexlet.repl.co'
-HTML_FIXTURE = os.path.join(
-    'tests', 'fixtures', 'page-loader-hexlet-repl-co.html'
+URL = 'https://page-loader.hexlet.repl.co'
+IMAGE_URL = 'https://page-loader.hexlet.repl.co/assets/professions/nodejs.png'
+HTML_PAGE_NAME = 'page-loader-hexlet-repl-co.html'
+ORIGINAL_PAGE = os.path.join(
+    'tests', 'fixtures', 'original_page.html'
 )
+DOWNLOADED_PAGE = os.path.join(
+    'tests', 'fixtures', 'downloaded_page.html'
+)
+IMAGE_FIXTURE = os.path.join(
+    'tests', 'fixtures', 'nodejs.png'
+)
+IMAGE_PATH = 'page-loader-hexlet-repl-co_files/' \
+             'page-loader-hexlet-repl-co-assets-professions-nodejs.png'
 
 
-def read_file(file_path):
-    with open(file_path, 'r', encoding='utf-8') as file:
+def read_file(file_path, mode='r'):
+    with open(file_path, mode) as file:
         return file.read()
 
 
 def test_download(requests_mock):
     with tempfile.TemporaryDirectory() as tmpdir:
-        file_data = read_file(HTML_FIXTURE)
-        requests_mock.get(HEXLET_URL, text=file_data)
-        assert download(HEXLET_URL, tmpdir) == \
-               os.path.join(tmpdir, 'page-loader-hexlet-repl-co.html')
-        assert file_data == requests.get(HEXLET_URL).text
+        requests_mock.get(URL, text=read_file(ORIGINAL_PAGE))
+        requests_mock.get(IMAGE_URL, content=read_file(IMAGE_FIXTURE, 'rb'))
+        download(URL, tmpdir)
+        result_file = os.path.join(tmpdir, HTML_PAGE_NAME)
+        result_png = os.path.join(tmpdir, IMAGE_PATH)
+        assert read_file(result_file) == read_file(DOWNLOADED_PAGE)
+        # assert read_file(result_png, 'rb') == read_file(IMAGE_FIXTURE, 'rb')
