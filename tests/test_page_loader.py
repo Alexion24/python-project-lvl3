@@ -32,4 +32,4 @@ def test_download(requests_mock):
         result_file = os.path.join(tmpdir, HTML_PAGE_NAME)
         result_png = os.path.join(tmpdir, IMAGE_PATH)
         assert read_file(result_file) == read_file(DOWNLOADED_PAGE)
-        # assert read_file(result_png, 'rb') == read_file(IMAGE_FIXTURE, 'rb')
+        assert read_file(result_png, 'rb') == read_file(IMAGE_FIXTURE, 'rb')
