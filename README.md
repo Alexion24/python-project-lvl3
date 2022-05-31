@@ -4,5 +4,12 @@
 [![Maintainability](https://api.codeclimate.com/v1/badges/0fc79eb01bc2d7e8abe1/maintainability)](https://codeclimate.com/github/Alexion24/python-project-lvl3/maintainability)
 [![Test Coverage](https://api.codeclimate.com/v1/badges/0fc79eb01bc2d7e8abe1/test_coverage)](https://codeclimate.com/github/Alexion24/python-project-lvl3/test_coverage)
 
+## Project description:
+Python package for downloading web pages and their local files like images, scripts and links
+
 ## Demonstration:
+#### Download only web page
 [![asciicast](https://asciinema.org/a/oSaDdMaVTVgFP3m8LwWIwgFEP.svg)](https://asciinema.org/a/oSaDdMaVTVgFP3m8LwWIwgFEP)
+
+#### Download web page and images
+[![asciicast](https://asciinema.org/a/9UojaafAZKHdnHIeSmlzoauHY.svg)](https://asciinema.org/a/9UojaafAZKHdnHIeSmlzoauHY)
