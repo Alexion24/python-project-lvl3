@@ -7,6 +7,7 @@ from page_loader.resources_handler import handling_resources
 
 
 DEFAULT_DIR = os.getcwd()
+TAGS = ['img', 'link', 'script']
 
 
 def download(url, directory_path=DEFAULT_DIR):
@@ -18,7 +19,7 @@ def download(url, directory_path=DEFAULT_DIR):
     resources_path = os.path.join(directory_path, directory_with_resources)
     os.mkdir(resources_path)
     soup = BeautifulSoup(data_from_url, 'html.parser')
-    resource_tag = soup.find_all('img')
-    handling_resources(url, resources_path, resource_tag)
+    resource_tags = soup.find_all(TAGS)
+    handling_resources(url, resources_path, resource_tags)
     save_data_to_file(result_file_path, soup.prettify())
     return result_file_path

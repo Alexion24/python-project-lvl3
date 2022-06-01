@@ -30,6 +30,11 @@ def get_html_file_name(url):
     return get_url_string_name(url) + '.html'
 
 
+def get_right_url_structure(url):
+    parsed_url = urlparse(url)
+    return parsed_url.scheme + '://' + parsed_url.netloc
+
+
 def is_url_local(url, resource_url):
     parsed_url = urlparse(url)
     resource_url_netloc = urlparse(resource_url).netloc

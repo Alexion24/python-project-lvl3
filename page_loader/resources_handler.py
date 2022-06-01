@@ -2,13 +2,15 @@ import os
 from pathlib import Path
 from urllib.parse import urlparse
 from page_loader.url_handler import is_url_local, adapt_string, \
-    get_url_string_name, get_directory_name
+    get_url_string_name, get_directory_name, get_right_url_structure
 from page_loader.data_handler import get_data_from_resource, save_data_to_file
 
-TAG_ATTRIBUTES = {'img': 'src'}
+TAG_ATTRIBUTES = {'img': 'src', 'link': 'href', 'script': 'src'}
 
 
 def get_link_from_tag(resource):
+    if resource.get('href'):
+        return resource.get('href')
     return resource.get('src')
 
 
@@ -42,9 +44,10 @@ def get_resource_name(url, resource):
 def download_resources(url, directory_path, resource_paths):
     paths_to_links = []
     for resource in resource_paths:
-        file_name = get_resource_name(url, resource)
+        right_structure_url = get_right_url_structure(url)
+        file_name = get_resource_name(right_structure_url, resource)
         file_path = os.path.join(directory_path, file_name)
-        resource_data = get_data_from_resource(url, resource)
+        resource_data = get_data_from_resource(right_structure_url, resource)
         save_data_to_file(file_path, resource_data)
         path_to_link = f'{get_directory_name(url)}/{file_name}'
         paths_to_links.append(path_to_link)
