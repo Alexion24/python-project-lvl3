@@ -16,3 +16,6 @@ Python package for downloading web pages and their local files like images, scri
 
 #### Download web page and all local resources with "img", "link" and "script" tags
 [![asciicast](https://asciinema.org/a/czjfsBZYTC8zQo9Ldfbmw9sp6.svg)](https://asciinema.org/a/czjfsBZYTC8zQo9Ldfbmw9sp6)
+
+#### Downloading with logging
+[![asciicast](https://asciinema.org/a/vV8wF1gxi3v8hrVPGzFoT4Zo5.svg)](https://asciinema.org/a/vV8wF1gxi3v8hrVPGzFoT4Zo5)
