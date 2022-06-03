@@ -1,3 +1,4 @@
+import logging
 import os
 from pathlib import Path
 from urllib.parse import urlparse
@@ -45,6 +46,7 @@ def download_resources(url, directory_path, resource_paths):
     paths_to_links = []
     for resource in resource_paths:
         right_structure_url = get_right_url_structure(url)
+        logging.debug(f'Downloading {right_structure_url + resource}')
         file_name = get_resource_name(right_structure_url, resource)
         file_path = os.path.join(directory_path, file_name)
         resource_data = get_data_from_resource(right_structure_url, resource)
