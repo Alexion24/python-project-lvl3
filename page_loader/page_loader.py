@@ -20,7 +20,16 @@ def download(url, directory_path=DEFAULT_DIR):
     )
     directory_with_resources = get_directory_name(url)
     resources_path = os.path.join(directory_path, directory_with_resources)
-    os.mkdir(resources_path)
+    try:
+        os.mkdir(resources_path)
+    except FileNotFoundError as error:
+        print(f'No such file or directory: {resources_path}.')
+        logging.exception(f'No such file or directory: {resources_path}.')
+        raise error
+    except OSError as error:
+        print(f'Directory {resources_path} already exists.')
+        logging.exception(f'Directory {resources_path} already exists.')
+        raise error
     logging.info(f'Downloaded files will be saved in {resources_path}.')
     soup = BeautifulSoup(data_from_url, 'html.parser')
     logging.debug('Parsing web page content...')

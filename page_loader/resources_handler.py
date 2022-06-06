@@ -1,5 +1,6 @@
 import logging
 import os
+import requests
 from pathlib import Path
 from urllib.parse import urlparse
 from page_loader.url_handler import is_url_local, adapt_string, \
@@ -49,8 +50,22 @@ def download_resources(url, directory_path, resource_paths):
         logging.debug(f'Downloading {right_structure_url + resource}')
         file_name = get_resource_name(right_structure_url, resource)
         file_path = os.path.join(directory_path, file_name)
-        resource_data = get_data_from_resource(right_structure_url, resource)
-        save_data_to_file(file_path, resource_data)
+        try:
+            resource_data = get_data_from_resource(
+                right_structure_url,
+                resource
+            )
+            save_data_to_file(file_path, resource_data)
+        except PermissionError as error:
+            logging.error(f'Access denied to file {file_path}')
+            raise error
+        except requests.RequestException as error:
+            logging.info(error)
+            logging.warning(f'Unable to handle {resource}')
+            continue
+        except OSError as error:
+            logging.error(f'Unable to save data to {file_path}')
+            raise error
         path_to_link = f'{get_directory_name(url)}/{file_name}'
         paths_to_links.append(path_to_link)
     return paths_to_links
