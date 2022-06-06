@@ -19,3 +19,6 @@ Python package for downloading web pages and their local files like images, scri
 
 #### Downloading with logging
 [![asciicast](https://asciinema.org/a/vV8wF1gxi3v8hrVPGzFoT4Zo5.svg)](https://asciinema.org/a/vV8wF1gxi3v8hrVPGzFoT4Zo5)
+
+#### Downloading demonstration with errors
+[![asciicast](https://asciinema.org/a/I0Kn9OQLqUuOnMYb4BXtKBHl1.svg)](https://asciinema.org/a/I0Kn9OQLqUuOnMYb4BXtKBHl1)
