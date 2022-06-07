@@ -62,6 +62,17 @@ def test_get_html_file_name():
     assert result_page_name == correct_answer
 
 
+def test_save_data_to_file(requests_mock):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        correct_answer = read_file(ORIGINAL_PAGE_FIXTURE)
+        requests_mock.get(URL, text=correct_answer)
+        data_from_url = get_data_from_url(URL)
+        file_path = os.path.join(tmpdir, HTML_PAGE_NAME)
+        save_data_to_file(file_path, data_from_url)
+        result = read_file(file_path)
+        assert result == correct_answer
+
+
 def test_download(requests_mock):
     with tempfile.TemporaryDirectory() as tmpdir:
         requests_mock.get(URL, text=read_file(ORIGINAL_PAGE_FIXTURE))
