@@ -1,14 +1,18 @@
 import os
 import tempfile
 import pytest
+import requests
 from page_loader.page_loader import download
 from page_loader.data_handler import get_data_from_url, save_data_to_file
+from page_loader.url_handler import get_directory_name, get_html_file_name
 from urllib.parse import urljoin
+
 
 URL = 'https://ru.hexlet.io/courses'
 IMAGE_URL = 'https://ru.hexlet.io/assets/professions/nodejs.png'
 CSS_URL = 'https://ru.hexlet.io/assets/application.css'
 SCRIPT_URL = 'https://ru.hexlet.io/packs/js/runtime.js'
+DIRECTORY_NAME = 'ru-hexlet-io-courses_files'
 HTML_PAGE_NAME = 'ru-hexlet-io-courses.html'
 INNER_HTML_PAGE_NAME = 'ru-hexlet-io-courses.html'
 ORIGINAL_PAGE_FIXTURE = os.path.join(
@@ -34,11 +38,28 @@ IMAGE_PATH = \
 INNER_HTML_PATH = 'ru-hexlet-io-courses_files/ru-hexlet-io-courses.html'
 CSS_PATH = 'ru-hexlet-io-courses_files/ru-hexlet-io-assets-application.css'
 SCRIPT_PATH = 'ru-hexlet-io-courses_files/ru-hexlet-io-packs-js-runtime.js'
+ERRORS = [
+    requests.exceptions.RequestException,
+    requests.exceptions.HTTPError,
+    requests.exceptions.Timeout
+]
 
 
 def read_file(file_path, mode='r'):
     with open(file_path, mode) as file:
         return file.read()
+
+
+def test_get_directory_name():
+    correct_answer = DIRECTORY_NAME
+    result_directory_name = get_directory_name(URL)
+    assert result_directory_name == correct_answer
+
+
+def test_get_html_file_name():
+    correct_answer = HTML_PAGE_NAME
+    result_page_name = get_html_file_name(URL)
+    assert result_page_name == correct_answer
 
 
 def test_download(requests_mock):
@@ -59,6 +80,16 @@ def test_download(requests_mock):
         assert read_file(result_inner_html) == read_file(INNER_HTML_FIXTURE)
         assert read_file(result_css) == read_file(CSS_FIXTURE)
         assert read_file(result_script) == read_file(SCRIPT_FIXTURE)
+
+
+@pytest.mark.parametrize('error', ERRORS)
+def test_response_with_http_error(requests_mock, error):
+    with tempfile.TemporaryDirectory() as tmpdir:
+        requests_mock.get(URL, exc=error)
+        requests_mock.get(URL, exc=error)
+        requests_mock.get(URL, exc=error)
+        with pytest.raises(error):
+            assert not download(URL, tmpdir)
 
 
 def test_response_with_error(requests_mock):
