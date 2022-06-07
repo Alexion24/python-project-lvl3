@@ -127,6 +127,15 @@ def test_save_to_file_with_permission_error(requests_mock):
 
 def test_directory_not_exist():
     with tempfile.TemporaryDirectory() as tmpdir:
+        data_from_url = get_data_from_url(URL)
         not_exists_directory = os.path.join(tmpdir, 'random_dir_name')
         with pytest.raises(OSError):
             download(URL, not_exists_directory)
+            save_data_to_file(not_exists_directory, data_from_url)
+
+
+def test_directory_already_exists():
+    with tempfile.TemporaryDirectory() as tmpdir:
+        download(URL, tmpdir)
+        with pytest.raises(OSError):
+            download(URL, tmpdir)
