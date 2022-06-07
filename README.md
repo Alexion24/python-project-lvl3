@@ -7,6 +7,14 @@
 ## Project description:
 Python package for downloading web pages and their local files like images, scripts and links
 
+#### Installing:
+`pip install git+https://github.com/Alexion24/python-project-lvl3.git`
+
+#### Useful commands:
+`page-loader -h`
+
+`page-loader -o(--output) directory_name url`
+
 ## Demonstration:
 #### Download only web page
 [![asciicast](https://asciinema.org/a/oSaDdMaVTVgFP3m8LwWIwgFEP.svg)](https://asciinema.org/a/oSaDdMaVTVgFP3m8LwWIwgFEP)
@@ -22,3 +30,6 @@ Python package for downloading web pages and their local files like images, scri
 
 #### Downloading demonstration with errors
 [![asciicast](https://asciinema.org/a/I0Kn9OQLqUuOnMYb4BXtKBHl1.svg)](https://asciinema.org/a/I0Kn9OQLqUuOnMYb4BXtKBHl1)
+
+#### Full project example
+[![asciicast](https://asciinema.org/a/WwtRFP1yAsTaLOMbCTM0KXvUK.svg)](https://asciinema.org/a/WwtRFP1yAsTaLOMbCTM0KXvUK)
