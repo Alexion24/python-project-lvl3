@@ -6,7 +6,9 @@ from urllib.parse import urlparse
 from progress.bar import ChargingBar
 from page_loader.url_handler import is_url_local, adapt_string, \
     get_url_string_name, get_directory_name, get_right_url_structure
-from page_loader.data_handler import get_data_from_resource, save_data_to_file
+from page_loader.data_processing_and_saving_functions import \
+    get_data_from_resource, save_data_to_file
+
 
 TAG_ATTRIBUTES = {'img': 'src', 'link': 'href', 'script': 'src'}
 
@@ -17,12 +19,12 @@ def get_link_from_tag(resource):
     return resource.get('src')
 
 
-def get_resources(resources, url):
+def get_resources(resource_tags, url):
     link_from_tag = {}
-    for resource in resources:
+    for resource in resource_tags:
         link = get_link_from_tag(resource)
         if is_url_local(link, url):
-            link_from_tag.update({resource: link})
+            link_from_tag[resource] = link
     return link_from_tag
 
 
@@ -85,7 +87,7 @@ def change_resource_paths(link_from_tag, paths_to_links):
         tag[TAG_ATTRIBUTES[tag.name]] = local_file_link
 
 
-def handling_resources(url, resources_path, resource_tags):
+def get_result_page_content(url, resources_path, resource_tags):
     link_from_tag = get_resources(resource_tags, url)
     paths_to_links = download_resources(
         url,

@@ -1,13 +1,35 @@
 import logging
 import os
 from bs4 import BeautifulSoup
-from page_loader.data_handler import save_data_to_file, get_data_from_url
+from page_loader.data_processing_and_saving_functions import \
+    save_data_to_file, get_data_from_url
 from page_loader.url_handler import get_html_file_name, get_directory_name
-from page_loader.resources_handler import handling_resources
+from page_loader.resource_processor import get_result_page_content, \
+    TAG_ATTRIBUTES
 
 
 DEFAULT_DIR = os.getcwd()
-TAGS = ['img', 'link', 'script']
+
+
+def get_parsed_data(data_from_url):
+    soup = BeautifulSoup(data_from_url, 'html.parser')
+    logging.debug('Parsing web page content...')
+    tags = list(TAG_ATTRIBUTES.keys())
+    resource_tags = soup.find_all(tags)
+    return resource_tags, soup
+
+
+def create_directory(resources_path):
+    try:
+        os.mkdir(resources_path)
+    except FileNotFoundError as error:
+        print(f'No such file or directory: {resources_path}.')
+        logging.exception(f'No such file or directory: {resources_path}.')
+        raise error
+    except OSError as error:
+        print(f'Directory {resources_path} already exists.')
+        logging.exception(f'Directory {resources_path} already exists.')
+        raise error
 
 
 def download(url, directory_path=DEFAULT_DIR):
@@ -20,22 +42,11 @@ def download(url, directory_path=DEFAULT_DIR):
     )
     directory_with_resources = get_directory_name(url)
     resources_path = os.path.join(directory_path, directory_with_resources)
-    try:
-        os.mkdir(resources_path)
-    except FileNotFoundError as error:
-        print(f'No such file or directory: {resources_path}.')
-        logging.exception(f'No such file or directory: {resources_path}.')
-        raise error
-    except OSError as error:
-        print(f'Directory {resources_path} already exists.')
-        logging.exception(f'Directory {resources_path} already exists.')
-        raise error
+    create_directory(resources_path)
     logging.info(f'Downloaded files will be saved in {resources_path}.')
-    soup = BeautifulSoup(data_from_url, 'html.parser')
-    logging.debug('Parsing web page content...')
-    resource_tags = soup.find_all(TAGS)
+    resource_tags, soup = get_parsed_data(data_from_url)
     logging.debug('Downloading web page content...')
-    handling_resources(url, resources_path, resource_tags)
+    get_result_page_content(url, resources_path, resource_tags)
     logging.info('Web page content successfully downloaded.')
     save_data_to_file(result_file_path, soup.prettify())
     logging.info(f'Web page content successfully saved in {result_file_path}.')

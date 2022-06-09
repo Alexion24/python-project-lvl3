@@ -1,5 +1,4 @@
 import logging
-
 import requests
 from page_loader.url_handler import get_absolute_url
 
