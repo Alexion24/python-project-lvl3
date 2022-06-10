@@ -14,9 +14,9 @@ TAG_ATTRIBUTES = {'img': 'src', 'link': 'href', 'script': 'src'}
 
 
 def get_link_from_tag(resource):
-    if resource.get('href'):
-        return resource.get('href')
-    return resource.get('src')
+    for key, value in TAG_ATTRIBUTES.items():
+        if key in str(resource):
+            return resource.get(value)
 
 
 def get_resources(resource_tags, url):
