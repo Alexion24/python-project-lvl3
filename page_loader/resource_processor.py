@@ -119,9 +119,23 @@ def get_changed_data(url, data_from_url, resources_path):
     return result_content
 
 
+def create_directory(resources_path):
+    try:
+        os.mkdir(resources_path)
+    except FileNotFoundError as error:
+        print(f'No such file or directory: {resources_path}.')
+        logging.exception(f'No such file or directory: {resources_path}.')
+        raise error
+    except OSError as error:
+        print(f'Directory {resources_path} already exists.')
+        logging.exception(f'Directory {resources_path} already exists.')
+        raise error
+
+
 def get_result_page_content(url, resources_path):
     data_from_url = get_data_from_url(url)
     logging.debug('Web page content received.')
+    create_directory(resources_path)
     result_content = get_changed_data(url, data_from_url, resources_path)
     logging.debug('Changed web page content received.')
     return result_content

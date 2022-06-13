@@ -8,19 +8,6 @@ from page_loader.resource_processor import get_result_page_content
 DEFAULT_DIR = os.getcwd()
 
 
-def create_directory(resources_path):
-    try:
-        os.mkdir(resources_path)
-    except FileNotFoundError as error:
-        print(f'No such file or directory: {resources_path}.')
-        logging.exception(f'No such file or directory: {resources_path}.')
-        raise error
-    except OSError as error:
-        print(f'Directory {resources_path} already exists.')
-        logging.exception(f'Directory {resources_path} already exists.')
-        raise error
-
-
 def download(url, directory_path=DEFAULT_DIR):
     result_file_name = get_html_file_name(url)
     result_file_path = os.path.join(directory_path, result_file_name)
@@ -30,7 +17,6 @@ def download(url, directory_path=DEFAULT_DIR):
     logging.debug('Downloading web page content...')
     directory_with_resources = get_directory_name(url)
     resources_path = os.path.join(directory_path, directory_with_resources)
-    create_directory(resources_path)
     logging.info(f'Downloaded files will be saved in {resources_path}.')
     result_content = get_result_page_content(url, resources_path)
     logging.info('Web page content successfully downloaded.')
