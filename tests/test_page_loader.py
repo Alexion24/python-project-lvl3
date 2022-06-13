@@ -3,8 +3,8 @@ import tempfile
 import pytest
 import requests
 from page_loader.page_loader import download
-from page_loader.data_processing_and_saving_functions import \
-    get_data_from_url, save_data_to_file
+from page_loader.resource_processor import get_data_from_url
+from page_loader.data_saver import save_data_to_file
 from page_loader.url_handler import get_directory_name, get_html_file_name
 from urllib.parse import urljoin
 

@@ -3,14 +3,25 @@ import os
 import requests
 from pathlib import Path
 from urllib.parse import urlparse
+from bs4 import BeautifulSoup
 from progress.bar import ChargingBar
+from page_loader.data_saver import save_data_to_file
 from page_loader.url_handler import is_url_local, adapt_string, \
-    get_url_string_name, get_directory_name, get_right_url_structure
-from page_loader.data_processing_and_saving_functions import \
-    get_data_from_resource, save_data_to_file
+    get_url_string_name, get_directory_name, get_right_url_structure, \
+    get_absolute_url
 
 
 TAG_ATTRIBUTES = {'img': 'src', 'link': 'href', 'script': 'src'}
+
+
+def get_data_from_url(url):
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as error:
+        logging.error(error)
+        raise f'Connection failed. Status code: {requests.get(url).status_code}'
+    return response.content
 
 
 def get_link_from_tag(resource):
@@ -26,6 +37,11 @@ def get_resources(resource_tags, url):
         if is_url_local(link, url):
             link_from_tag[resource] = link
     return link_from_tag
+
+
+def get_data_from_resource(url, resource):
+    link = get_absolute_url(url, resource)
+    return get_data_from_url(link)
 
 
 def get_resource_name(url, resource):
@@ -87,7 +103,11 @@ def change_resource_paths(link_from_tag, paths_to_links):
         tag[TAG_ATTRIBUTES[tag.name]] = local_file_link
 
 
-def get_result_page_content(url, resources_path, resource_tags):
+def get_changed_data(url, data_from_url, resources_path):
+    soup = BeautifulSoup(data_from_url, 'html.parser')
+    logging.debug('Parsing web page content...')
+    tags = list(TAG_ATTRIBUTES.keys())
+    resource_tags = soup.find_all(tags)
     link_from_tag = get_resources(resource_tags, url)
     paths_to_links = download_resources(
         url,
@@ -95,3 +115,13 @@ def get_result_page_content(url, resources_path, resource_tags):
         link_from_tag.values()
     )
     change_resource_paths(link_from_tag, paths_to_links)
+    result_content = soup.prettify()
+    return result_content
+
+
+def get_result_page_content(url, resources_path):
+    data_from_url = get_data_from_url(url)
+    logging.debug('Web page content received.')
+    result_content = get_changed_data(url, data_from_url, resources_path)
+    logging.debug('Changed web page content received.')
+    return result_content
