@@ -30,15 +30,6 @@ def get_link_from_tag(resource):
             return resource.get(value)
 
 
-def get_resources(resource_tags, url):
-    link_from_tag = {}
-    for resource in resource_tags:
-        link = get_link_from_tag(resource)
-        if is_url_local(link, url):
-            link_from_tag[resource] = link
-    return link_from_tag
-
-
 def get_data_from_resource(url, resource):
     link = get_absolute_url(url, resource)
     return get_data_from_url(link)
@@ -62,61 +53,23 @@ def get_resource_name(url, resource):
     return resource_name
 
 
-def download_resources(url, directory_path, resource_paths):
-    paths_to_links = []
-    for resource in resource_paths:
-        right_structure_url = get_right_url_structure(url)
-        logging.debug(f'Downloading {right_structure_url + resource}')
-        file_name = get_resource_name(right_structure_url, resource)
-        file_path = os.path.join(directory_path, file_name)
-        bar = ChargingBar(
-            f'Downloading: | {file_name} |',
-            max=1,
-            suffix='%(percent)d%%'
-        )
-        try:
-            resource_data = get_data_from_resource(
-                right_structure_url,
-                resource
-            )
-            save_data_to_file(file_path, resource_data)
-            bar.next()
-        except PermissionError as error:
-            logging.error(f'Access denied to file {file_path}')
-            raise error
-        except requests.RequestException as error:
-            logging.info(error)
-            logging.warning(f'Unable to handle {resource}')
-            continue
-        except OSError as error:
-            logging.error(f'Unable to save data to {file_path}')
-            raise error
-        path_to_link = f'{get_directory_name(url)}/{file_name}'
-        bar.next()
-        paths_to_links.append(path_to_link)
-        bar.finish()
-    return paths_to_links
-
-
-def change_resource_paths(link_from_tag, paths_to_links):
-    for tag, local_file_link in zip(link_from_tag.keys(), paths_to_links):
-        tag[TAG_ATTRIBUTES[tag.name]] = local_file_link
-
-
-def get_changed_data(url, data_from_url, resources_path):
+def get_content_and_resources(url, data_from_url):
     soup = BeautifulSoup(data_from_url, 'html.parser')
     logging.debug('Parsing web page content...')
     tags = list(TAG_ATTRIBUTES.keys())
     resource_tags = soup.find_all(tags)
-    link_from_tag = get_resources(resource_tags, url)
-    paths_to_links = download_resources(
-        url,
-        resources_path,
-        link_from_tag.values()
-    )
-    change_resource_paths(link_from_tag, paths_to_links)
+    right_structure_url = get_right_url_structure(url)
+    paths_to_links = {}
+    for resource_tag in resource_tags:
+        link = get_link_from_tag(resource_tag)
+        if is_url_local(link, url):
+            file_name = get_resource_name(right_structure_url, link)
+            path_to_link = f'{get_directory_name(url)}/{file_name}'
+            resource_tag[TAG_ATTRIBUTES[resource_tag.name]] = path_to_link
+            paths_to_links[link] = path_to_link
     result_content = soup.prettify()
-    return result_content
+    logging.debug('Changed web page content received.')
+    return result_content, paths_to_links
 
 
 def create_directory(resources_path):
@@ -132,10 +85,33 @@ def create_directory(resources_path):
         raise error
 
 
-def get_result_page_content(url, resources_path):
-    data_from_url = get_data_from_url(url)
-    logging.debug('Web page content received.')
+def download_resources(url, resources_path, paths_to_links):
     create_directory(resources_path)
-    result_content = get_changed_data(url, data_from_url, resources_path)
-    logging.debug('Changed web page content received.')
-    return result_content
+    for link, path in paths_to_links.items():
+        right_structure_url = get_right_url_structure(url)
+        logging.debug(f'Downloading {right_structure_url + link}')
+        file_name = get_resource_name(right_structure_url, link)
+        file_path = os.path.join(resources_path, file_name)
+        bar = ChargingBar(
+            f'Downloading: | {file_name} |',
+            max=1,
+            suffix='%(percent)d%%'
+        )
+        try:
+            resource_data = get_data_from_resource(
+                right_structure_url,
+                link
+            )
+            save_data_to_file(file_path, resource_data)
+            bar.next()
+        except PermissionError as error:
+            logging.error(f'Access denied to file {file_path}')
+            raise error
+        except requests.RequestException as error:
+            logging.info(error)
+            logging.warning(f'Unable to handle {link}')
+            continue
+        except OSError as error:
+            logging.error(f'Unable to save data to {file_path}')
+            raise error
+        bar.finish()
