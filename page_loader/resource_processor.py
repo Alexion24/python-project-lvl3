@@ -107,6 +107,9 @@ def download_resources(url, directory_path, paths_to_links):
                 link
             )
             save_data_to_file(file_path, resource_data)
+            logging.debug(
+                f'Data from {right_structure_url + link} successfully saved'
+            )
             bar.next()
         except PermissionError as error:
             logging.error(f'Access denied to file {file_path}')
