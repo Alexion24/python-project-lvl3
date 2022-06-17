@@ -7,8 +7,8 @@ from bs4 import BeautifulSoup
 from progress.bar import ChargingBar
 from page_loader.data_saver import save_data_to_file
 from page_loader.url_handler import is_url_local, adapt_string, \
-    get_url_string_name, get_resource_directory_name, get_resource_url_structure, \
-    get_absolute_url
+    get_url_string_name, get_resource_directory_name, get_absolute_url, \
+    get_resource_url_structure
 
 
 TAG_ATTRIBUTES = {'img': 'src', 'link': 'href', 'script': 'src'}
