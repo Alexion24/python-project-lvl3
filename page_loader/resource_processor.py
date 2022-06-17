@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from progress.bar import ChargingBar
 from page_loader.data_saver import save_data_to_file
 from page_loader.url_handler import is_url_local, adapt_string, \
-    get_url_string_name, get_resource_directory_name, get_right_url_structure, \
+    get_url_string_name, get_resource_directory_name, get_resource_url_structure, \
     get_absolute_url
 
 
@@ -59,7 +59,7 @@ def get_content_and_resources(url, data_from_url):
     logging.debug('Parsing web page content...')
     tags = list(TAG_ATTRIBUTES.keys())
     resource_tags = soup.find_all(tags)
-    right_structure_url = get_right_url_structure(url)
+    right_structure_url = get_resource_url_structure(url)
     paths_to_links = {}
     for resource_tag in resource_tags:
         link = get_link_from_tag(resource_tag)
@@ -92,7 +92,7 @@ def download_resources(url, directory_path, paths_to_links):
     logging.info(f'Downloaded files will be saved in {resources_path}.')
     create_directory(resources_path)
     for link, path in paths_to_links.items():
-        right_structure_url = get_right_url_structure(url)
+        right_structure_url = get_resource_url_structure(url)
         logging.debug(f'Downloading {right_structure_url + link}')
         file_name = get_resource_name(right_structure_url, link)
         file_path = os.path.join(resources_path, file_name)

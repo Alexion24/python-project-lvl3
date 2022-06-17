@@ -30,7 +30,7 @@ def get_html_file_name(url):
     return get_url_string_name(url) + '.html'
 
 
-def get_right_url_structure(url):
+def get_resource_url_structure(url):
     parsed_url = urlparse(url)
     return parsed_url.scheme + '://' + parsed_url.netloc
 
