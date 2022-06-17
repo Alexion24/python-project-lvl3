@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 from progress.bar import ChargingBar
 from page_loader.data_saver import save_data_to_file
 from page_loader.url_handler import is_url_local, adapt_string, \
-    get_url_string_name, get_directory_name, get_right_url_structure, \
+    get_url_string_name, get_resource_directory_name, get_right_url_structure, \
     get_absolute_url
 
 
@@ -25,9 +25,10 @@ def get_data_from_url(url):
 
 
 def get_link_from_tag(resource):
-    for key, value in TAG_ATTRIBUTES.items():
-        if key in str(resource):
-            return resource.get(value)
+    if 'img' in str(resource) or 'script' in str(resource):
+        return resource.get('src')
+    elif 'link' in str(resource):
+        return resource.get('href')
 
 
 def get_data_from_resource(url, resource):
@@ -64,7 +65,7 @@ def get_content_and_resources(url, data_from_url):
         link = get_link_from_tag(resource_tag)
         if is_url_local(link, url):
             file_name = get_resource_name(right_structure_url, link)
-            path_to_link = f'{get_directory_name(url)}/{file_name}'
+            path_to_link = f'{get_resource_directory_name(url)}/{file_name}'
             resource_tag[TAG_ATTRIBUTES[resource_tag.name]] = path_to_link
             paths_to_links[link] = path_to_link
     result_content = soup.prettify()
@@ -85,7 +86,10 @@ def create_directory(resources_path):
         raise error
 
 
-def download_resources(url, resources_path, paths_to_links):
+def download_resources(url, directory_path, paths_to_links):
+    directory_with_resources = get_resource_directory_name(url)
+    resources_path = os.path.join(directory_path, directory_with_resources)
+    logging.info(f'Downloaded files will be saved in {resources_path}.')
     create_directory(resources_path)
     for link, path in paths_to_links.items():
         right_structure_url = get_right_url_structure(url)

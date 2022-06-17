@@ -5,7 +5,8 @@ import requests
 from page_loader.page_loader import download
 from page_loader.resource_processor import get_data_from_url
 from page_loader.data_saver import save_data_to_file
-from page_loader.url_handler import get_directory_name, get_html_file_name
+from page_loader.url_handler import get_resource_directory_name, \
+    get_html_file_name
 from urllib.parse import urljoin
 
 
@@ -53,7 +54,7 @@ def read_file(file_path, mode='r'):
 
 def test_get_directory_name():
     correct_answer = DIRECTORY_NAME
-    result_directory_name = get_directory_name(URL)
+    result_directory_name = get_resource_directory_name(URL)
     assert result_directory_name == correct_answer
 
 

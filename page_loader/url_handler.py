@@ -22,7 +22,7 @@ def get_downloaded_file_name(url):
     return adapt_string(parsed_url)
 
 
-def get_directory_name(url):
+def get_resource_directory_name(url):
     return get_url_string_name(url) + '_files'
 
 
