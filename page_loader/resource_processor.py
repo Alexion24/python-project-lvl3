@@ -25,10 +25,13 @@ def get_data_from_url(url):
 
 
 def get_link_from_tag(resource):
-    if 'link' in str(resource):
-        return resource.get('href')
-    elif 'img' in str(resource) or 'script' in str(resource):
-        return resource.get('src')
+    return resource.get(
+        TAG_ATTRIBUTES['img']
+    ) or resource.get(
+        TAG_ATTRIBUTES['link']
+    ) or resource.get(
+        TAG_ATTRIBUTES['script']
+    )
 
 
 def get_data_from_resource(url, resource):
